@@ -56,7 +56,695 @@
   .cat-title { font-family: 'Fraunces', serif; font-weight: 400; font-size: clamp(28px, 4vw, 40px); line-height: 1; letter-spacing: -0.01em; flex: 1; }
   .cat-count { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-mute); }
   .cat-desc { font-size: 15px; color: var(--ink-soft); margin-bottom: 32px; max-width: 640px; line-height: 1.55; }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz + Language Toggle — Drop-in Snippet</title>
 
+<!-- These two fonts are used by the quiz. If your existing site already loads them, skip these lines. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&family=Inter+Tight:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- ============================================================
+     DEMO PAGE STYLING — NOT part of the snippet.
+     This just gives the standalone preview some context.
+     DO NOT copy this <style> block.
+     ============================================================ -->
+<style>
+  body { background: #F1ECE2; margin: 0; padding: 48px 24px 80px; font-family: 'Inter Tight', sans-serif; font-size: 17px; min-height: 100vh; }
+  .demo-wrap { max-width: 1140px; margin: 0 auto; position: relative; }
+  .demo-note { background: #FFF4D6; border: 1.5px solid #E8C470; border-radius: 6px; padding: 18px 22px; margin: 64px 0 28px; font-size: 15px; color: #5A4633; line-height: 1.55; }
+  .demo-note strong { color: #261A11; }
+</style>
+
+<!-- ============================================================
+     ▼▼▼ PART 1 of 3 — CSS ▼▼▼
+     Copy everything inside the <style> tag below into your
+     existing site's main <style> tag.
+     CSS variables are scoped to .dano-quiz so they won't
+     affect anything outside the quiz section.
+     ============================================================ -->
+<style>
+  /* === Language Toggle === */
+  .lang-toggle {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    display: flex;
+    background: #FBF8F1;
+    border: 1.5px solid #C9BFAF;
+    border-radius: 999px;
+    padding: 4px;
+    z-index: 10;
+  }
+  .lang-toggle button {
+    background: none;
+    border: 0;
+    padding: 10px 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    color: #8A7461;
+    cursor: pointer;
+    border-radius: 999px;
+    transition: all 0.2s;
+    min-height: 44px;
+  }
+  .lang-toggle button.active { background: #261A11; color: #F1ECE2; }
+  .lang-toggle button:not(.active):hover { color: #8C4524; }
+
+  /* === Quiz (all styles scoped under .dano-quiz) === */
+  .dano-quiz {
+    --dq-bg: #F1ECE2;
+    --dq-card: #FBF8F1;
+    --dq-card-2: #F6F1E5;
+    --dq-ink: #261A11;
+    --dq-ink-soft: #5A4633;
+    --dq-ink-mute: #8A7461;
+    --dq-accent: #B8643E;
+    --dq-accent-deep: #8C4524;
+    --dq-sage: #6F8054;
+    --dq-line: #C9BFAF;
+    --dq-line-soft: #DDD3C2;
+    margin-bottom: 80px;
+    scroll-margin-top: 20px;
+    font-family: 'Inter Tight', sans-serif;
+    color: var(--dq-ink);
+  }
+  .dano-quiz *,
+  .dano-quiz *::before,
+  .dano-quiz *::after { box-sizing: border-box; }
+
+  .dano-quiz .quiz-card {
+    background: linear-gradient(135deg, #FBF8F1 0%, #F6F1E5 100%);
+    border: 1.5px solid var(--dq-line);
+    border-radius: 8px;
+    padding: 56px 48px;
+    box-shadow: 0 1px 0 rgba(38,26,17,0.02), 0 20px 50px -24px rgba(38,26,17,0.14);
+    position: relative;
+    overflow: hidden;
+  }
+  .dano-quiz .quiz-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 4px;
+    background: linear-gradient(90deg, var(--dq-accent), var(--dq-sage), var(--dq-accent));
+  }
+
+  .dano-quiz .quiz-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--dq-accent); margin-bottom: 16px; text-align: center; font-weight: 500; }
+  .dano-quiz .quiz-title { font-family: 'Fraunces', serif; font-weight: 400; font-size: clamp(32px, 4.5vw, 44px); line-height: 1.1; text-align: center; margin: 0 0 16px; letter-spacing: -0.01em; }
+  .dano-quiz .quiz-sub { text-align: center; color: var(--dq-ink-soft); font-size: 17px; max-width: 520px; margin: 0 auto 40px; line-height: 1.55; }
+
+  .dano-quiz .quiz-progress { display: flex; justify-content: center; gap: 10px; margin-bottom: 40px; }
+  .dano-quiz .quiz-progress .dot { width: 48px; height: 5px; background: var(--dq-line); border-radius: 3px; transition: background 0.3s; }
+  .dano-quiz .quiz-progress .dot.active { background: var(--dq-accent); }
+  .dano-quiz .quiz-progress .dot.done { background: var(--dq-sage); }
+
+  .dano-quiz .quiz-question { display: none; max-width: 700px; margin: 0 auto; }
+  .dano-quiz .quiz-question.active { display: block; }
+  .dano-quiz .quiz-question h3 { font-family: 'Fraunces', serif; font-weight: 400; font-size: clamp(24px, 3vw, 30px); text-align: center; margin: 0 0 36px; line-height: 1.25; letter-spacing: -0.005em; color: var(--dq-ink); }
+
+  .dano-quiz .options-list { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; padding: 0; list-style: none; }
+  .dano-quiz .option-card {
+    background: #fff;
+    border: 2px solid var(--dq-line);
+    padding: 22px 24px;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.18s;
+    font-family: 'Inter Tight', sans-serif;
+    border-radius: 8px;
+    min-height: 88px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color: var(--dq-ink);
+  }
+  .dano-quiz .option-card:hover { border-color: var(--dq-accent); transform: translateY(-2px); box-shadow: 0 8px 24px -12px rgba(184,100,62,0.25); }
+  .dano-quiz .option-card:focus-visible { outline: 3px solid var(--dq-accent); outline-offset: 2px; }
+  .dano-quiz .option-card.selected { background: var(--dq-ink); color: var(--dq-bg); border-color: var(--dq-ink); }
+  .dano-quiz .option-card .opt-label { font-size: 19px; font-weight: 500; margin-bottom: 6px; display: block; letter-spacing: -0.005em; }
+  .dano-quiz .option-card .opt-desc { font-size: 15px; color: var(--dq-ink-soft); line-height: 1.45; }
+  .dano-quiz .option-card.selected .opt-desc { color: rgba(241, 236, 226, 0.78); }
+
+  .dano-quiz .not-sure-row { display: flex; justify-content: center; margin-bottom: 32px; }
+  .dano-quiz .not-sure-btn {
+    background: transparent;
+    border: 1.5px dashed var(--dq-line);
+    padding: 14px 24px;
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 15px;
+    color: var(--dq-ink-soft);
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-height: 48px;
+  }
+  .dano-quiz .not-sure-btn:hover { border-color: var(--dq-accent); color: var(--dq-accent-deep); border-style: solid; }
+  .dano-quiz .not-sure-btn.selected { background: var(--dq-sage); color: #fff; border-color: var(--dq-sage); border-style: solid; }
+
+  .dano-quiz .quiz-nav { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 16px; }
+  .dano-quiz .nav-btn {
+    background: none;
+    border: 1.5px solid var(--dq-line);
+    padding: 14px 28px;
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--dq-ink-soft);
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-height: 52px;
+  }
+  .dano-quiz .nav-btn:hover { color: var(--dq-accent-deep); border-color: var(--dq-accent); }
+  .dano-quiz .nav-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .dano-quiz .nav-btn.primary { background: var(--dq-ink); color: var(--dq-bg); border-color: var(--dq-ink); padding: 14px 32px; }
+  .dano-quiz .nav-btn.primary:hover:not(:disabled) { background: var(--dq-accent-deep); border-color: var(--dq-accent-deep); }
+
+  .dano-quiz .quiz-results { display: none; }
+  .dano-quiz .quiz-results.active { display: block; }
+
+  .dano-quiz .results-header { text-align: center; margin-bottom: 40px; }
+  .dano-quiz .results-header h3 { font-family: 'Fraunces', serif; font-weight: 400; font-size: clamp(30px, 4vw, 40px); margin: 0 0 10px; letter-spacing: -0.01em; color: var(--dq-ink); }
+  .dano-quiz .results-header .summary { font-family: 'Fraunces', serif; font-style: italic; font-weight: 300; color: var(--dq-ink-soft); font-size: 18px; }
+
+  .dano-quiz .routine-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 28px; }
+  .dano-quiz .routine-block { background: #fff; border: 1.5px solid var(--dq-line); border-radius: 6px; padding: 28px 26px; }
+  .dano-quiz .routine-block.extras { grid-column: 1 / -1; background: var(--dq-card-2); }
+  .dano-quiz .routine-block-header { display: flex; align-items: center; gap: 12px; padding-bottom: 18px; border-bottom: 1px solid var(--dq-line-soft); margin-bottom: 20px; }
+  .dano-quiz .routine-icon { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; background: var(--dq-bg); border-radius: 50%; font-size: 18px; }
+  .dano-quiz .routine-block-title { font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--dq-ink); font-weight: 500; }
+  .dano-quiz .routine-step { display: flex; align-items: flex-start; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--dq-line-soft); }
+  .dano-quiz .routine-step:last-child { border-bottom: 0; padding-bottom: 0; }
+  .dano-quiz .step-num { flex-shrink: 0; width: 32px; height: 32px; background: var(--dq-ink); color: var(--dq-bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500; }
+  .dano-quiz .step-info { flex: 1; min-width: 0; }
+  .dano-quiz .step-brand { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--dq-accent); margin-bottom: 4px; font-weight: 500; }
+  .dano-quiz .step-name { font-family: 'Fraunces', serif; font-size: 17px; line-height: 1.3; color: var(--dq-ink); margin-bottom: 4px; }
+  .dano-quiz .step-use { font-size: 14px; color: var(--dq-ink-soft); line-height: 1.5; }
+
+  .dano-quiz .tips { background: var(--dq-card); border: 1.5px solid var(--dq-line); border-left: 4px solid var(--dq-sage); border-radius: 6px; padding: 22px 26px; margin-bottom: 28px; }
+  .dano-quiz .tips-label { font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--dq-sage); margin-bottom: 12px; font-weight: 500; }
+  .dano-quiz .tips ul { list-style: none; padding: 0; margin: 0; }
+  .dano-quiz .tips li { font-size: 15px; color: var(--dq-ink-soft); line-height: 1.55; padding: 6px 0; }
+  .dano-quiz .tips li::before { content: '— '; color: var(--dq-sage); font-weight: 500; }
+
+  .dano-quiz .results-actions { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; }
+
+  @media (max-width: 880px) {
+    .dano-quiz .routine-grid { grid-template-columns: 1fr; }
+    .dano-quiz .quiz-card { padding: 40px 28px; }
+  }
+  @media (max-width: 600px) {
+    .dano-quiz .options-list { grid-template-columns: 1fr; }
+    .dano-quiz .quiz-card { padding: 32px 22px; }
+    .dano-quiz .quiz-nav { flex-direction: column-reverse; align-items: stretch; }
+    .dano-quiz .quiz-nav .nav-btn { width: 100%; }
+    .lang-toggle { top: 18px; right: 18px; }
+    .lang-toggle button { padding: 8px 16px; font-size: 13px; }
+  }
+
+  @media print {
+    .lang-toggle,
+    .dano-quiz .quiz-progress,
+    .dano-quiz .results-actions,
+    .dano-quiz .quiz-question { display: none !important; }
+    .dano-quiz .quiz-card { border: none; box-shadow: none; padding: 0; background: none; }
+    .dano-quiz .quiz-card::before { display: none; }
+    .dano-quiz { margin: 0; }
+    .dano-quiz .quiz-results.active { display: block !important; }
+    .dano-quiz .routine-block { break-inside: avoid; border-color: #999; }
+  }
+</style>
+<!-- ▲▲▲ END PART 1 ▲▲▲ -->
+
+</head>
+<body>
+<div class="demo-wrap">
+
+  <div class="demo-note">
+    <strong>Standalone preview.</strong> This page exists so you can see the quiz + language toggle working before integrating. Open this file in a text editor and look for the three sections marked <code>PART 1</code>, <code>PART 2</code>, and <code>PART 3</code>. Copy each into the matching place in your existing HTML.
+  </div>
+
+  <!-- ============================================================
+       ▼▼▼ PART 2A of 3 — HTML: Language Toggle ▼▼▼
+       Place this where you want the EN/ES switch.
+       Top-right of the page is standard. If you already have a
+       toggle, you can delete this and skip to 2B.
+       ============================================================ -->
+  <div class="lang-toggle" id="lang-toggle" role="group" aria-label="Language">
+    <button data-lang="en" class="active" type="button">EN</button>
+    <button data-lang="es" type="button">ES</button>
+  </div>
+  <!-- ▲▲▲ END PART 2A ▲▲▲ -->
+
+
+  <!-- ============================================================
+       ▼▼▼ PART 2B of 3 — HTML: Quiz Section ▼▼▼
+       Place this wherever you want the routine builder.
+       ============================================================ -->
+  <section class="dano-quiz" id="dano-quiz">
+    <div class="quiz-card">
+      <div id="dq-intro">
+        <div class="quiz-eyebrow" id="dq-eyebrow"></div>
+        <h2 class="quiz-title" id="dq-title"></h2>
+        <p class="quiz-sub" id="dq-sub"></p>
+
+        <div class="quiz-progress" id="dq-progress">
+          <span class="dot active"></span>
+          <span class="dot"></span>
+        </div>
+
+        <div class="quiz-question active" data-question="0">
+          <h3 id="dq-q1"></h3>
+          <div class="options-list" id="dq-opts-skintype"></div>
+          <div class="not-sure-row">
+            <button class="not-sure-btn" id="dq-btn-notsure" type="button"></button>
+          </div>
+          <div class="quiz-nav">
+            <span></span>
+            <button class="nav-btn primary" id="dq-btn-next1" disabled type="button"></button>
+          </div>
+        </div>
+
+        <div class="quiz-question" data-question="1">
+          <h3 id="dq-q2"></h3>
+          <div class="options-list" id="dq-opts-concern"></div>
+          <div class="quiz-nav">
+            <button class="nav-btn" id="dq-btn-back2" type="button"></button>
+            <button class="nav-btn primary" id="dq-btn-submit" disabled type="button"></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="quiz-results" id="dq-results">
+        <div class="results-header">
+          <h3 id="dq-results-title"></h3>
+          <p class="summary" id="dq-results-summary"></p>
+        </div>
+        <div class="routine-grid" id="dq-routine-grid"></div>
+        <div class="tips" id="dq-tips-box" hidden>
+          <div class="tips-label" id="dq-tips-label"></div>
+          <ul id="dq-tips-list"></ul>
+        </div>
+        <div class="results-actions">
+          <button class="nav-btn" id="dq-btn-restart" type="button"></button>
+          <button class="nav-btn primary" id="dq-btn-print" type="button"></button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- ▲▲▲ END PART 2B ▲▲▲ -->
+
+</div>
+
+
+<!-- ============================================================
+     ▼▼▼ PART 3 of 3 — JavaScript ▼▼▼
+     Copy everything inside the <script> tag below and paste it
+     into a <script> tag right before your closing </body> tag.
+     The IIFE wrapper keeps it from polluting your global scope.
+
+     INTEGRATING WITH YOUR EXISTING TRANSLATIONS:
+     If you already have your own translations for the rest of
+     your page, define a global function called
+     window.onDanoLangChange = function(lang) { ... }
+     before this script runs. It will be called every time the
+     language toggle is clicked, with 'en' or 'es' as the
+     argument, so you can update your own page content too.
+     ============================================================ -->
+<script>
+(function() {
+  'use strict';
+
+  // ============ i18n ============
+  const i18n = {
+    en: {
+      eyebrow: 'Your Personalized Plan',
+      title: 'Find Your Skincare Routine',
+      sub: 'Two quick questions. Each one takes a few seconds. There are no wrong answers.',
+      q1: 'How does your skin usually feel?',
+      q2: 'What matters most to you?',
+      notSure: "I'm not sure — help me pick",
+      next: 'Next →',
+      back: '← Back',
+      submit: 'Show My Routine →',
+      resultsTitle: 'Your Daily Skincare Routine',
+      summary: (s, c) => `For ${s} skin, focused on ${c}.`,
+      morning: 'Morning Routine',
+      evening: 'Evening Routine',
+      additional: 'Extra Treatment',
+      tipsLabel: 'Notes from Dr. Dano',
+      restart: '↻ Start Over',
+      print: '⎙ Print This Page',
+      skinType: {
+        dry: { label: 'Dry', desc: 'Feels tight, flaky, or rough most of the time' },
+        normal: { label: 'Normal', desc: 'Feels comfortable, not too dry or too oily' },
+        oily: { label: 'Oily', desc: 'Looks shiny or feels greasy by midday' },
+        combination: { label: 'Combination', desc: 'Oily on the forehead and nose, dry on the cheeks' },
+        sensitive: { label: 'Sensitive', desc: 'Often turns red, stings, or reacts to new products' }
+      },
+      concern: {
+        dryness: { label: 'Dryness or itching', desc: 'Skin often feels dry, itchy, or irritated' },
+        aging: { label: 'Wrinkles or sun damage', desc: 'Fine lines, age spots, or skin texture' },
+        sun: { label: 'Sun protection', desc: 'Daily protection from the sun is the priority' },
+        hair: { label: 'Hair thinning', desc: 'Want to treat thinning hair' }
+      },
+      summaryLabels: {
+        dry: 'dry', normal: 'normal', oily: 'oily', combination: 'combination', sensitive: 'sensitive',
+        dryness: 'dryness and itching', aging: 'wrinkles and sun damage', sun: 'sun protection', hair: 'hair thinning'
+      },
+      tipRetinol: 'Use the retinol lotion only 2 to 3 nights a week to start. Always wear sunscreen the next morning — retinol makes skin more sensitive to the sun.',
+      tipSensitive: 'Try any new product on a small spot first for 2 to 3 days to make sure it agrees with your skin.',
+      tipRogaine: 'Use the foam twice a day for at least 4 months to see results. Keep using it to maintain hair regrowth.',
+      tipDryness: 'Apply moisturizer right after washing, while skin is still slightly damp. This locks in more moisture.',
+      tipNotSure: 'We picked the gentlest products for you. Please ask Dr. Dano at your next visit for a more personalized plan.'
+    },
+    es: {
+      eyebrow: 'Su Plan Personalizado',
+      title: 'Encuentre Su Rutina',
+      sub: 'Dos preguntas rápidas. Cada una toma unos segundos. No hay respuestas incorrectas.',
+      q1: '¿Cómo se siente su piel normalmente?',
+      q2: '¿Qué es lo más importante para usted?',
+      notSure: 'No estoy seguro/a — ayúdeme a elegir',
+      next: 'Siguiente →',
+      back: '← Atrás',
+      submit: 'Mostrar Mi Rutina →',
+      resultsTitle: 'Su Rutina Diaria',
+      summary: (s, c) => `Para piel ${s}, enfocada en ${c}.`,
+      morning: 'Rutina de la Mañana',
+      evening: 'Rutina de la Noche',
+      additional: 'Tratamiento Adicional',
+      tipsLabel: 'Notas del Dr. Dano',
+      restart: '↻ Empezar de Nuevo',
+      print: '⎙ Imprimir Esta Página',
+      skinType: {
+        dry: { label: 'Seca', desc: 'Se siente tensa, escamosa o áspera la mayoría del tiempo' },
+        normal: { label: 'Normal', desc: 'Se siente cómoda, ni muy seca ni muy grasa' },
+        oily: { label: 'Grasa', desc: 'Se ve brillante o se siente grasosa a media tarde' },
+        combination: { label: 'Mixta', desc: 'Grasa en la frente y nariz, seca en las mejillas' },
+        sensitive: { label: 'Sensible', desc: 'A menudo se enrojece, escuece o reacciona a productos nuevos' }
+      },
+      concern: {
+        dryness: { label: 'Sequedad o picazón', desc: 'La piel se siente seca, picante o irritada con frecuencia' },
+        aging: { label: 'Arrugas o daño solar', desc: 'Líneas finas, manchas de edad, o textura de la piel' },
+        sun: { label: 'Protección solar', desc: 'La protección diaria contra el sol es la prioridad' },
+        hair: { label: 'Pérdida de cabello', desc: 'Tratar el cabello que se está adelgazando' }
+      },
+      summaryLabels: {
+        dry: 'seca', normal: 'normal', oily: 'grasa', combination: 'mixta', sensitive: 'sensible',
+        dryness: 'la sequedad y picazón', aging: 'las arrugas y el daño solar', sun: 'la protección solar', hair: 'la pérdida de cabello'
+      },
+      tipRetinol: 'Use la loción con retinol solo 2 o 3 noches por semana al principio. Siempre use protector solar la mañana siguiente — el retinol hace que la piel sea más sensible al sol.',
+      tipSensitive: 'Pruebe cualquier producto nuevo en un área pequeña primero durante 2 o 3 días para asegurarse de que su piel lo tolere bien.',
+      tipRogaine: 'Use la espuma dos veces al día durante al menos 4 meses para ver resultados. Continúe usándola para mantener el crecimiento del cabello.',
+      tipDryness: 'Aplique la crema justo después de lavarse, cuando la piel todavía está un poco húmeda. Esto retiene más humedad.',
+      tipNotSure: 'Hemos elegido los productos más suaves para usted. Por favor consulte con Dr. Dano en su próxima visita para un plan más personalizado.'
+    }
+  };
+
+  // ============ Products (referenced by the routine output) ============
+  const products = {
+    'cerave-cleanser': {
+      brand: 'CeraVe',
+      name: { en: 'Hydrating Cream-to-Foam Cleanser', es: 'Limpiador Hidratante de Crema a Espuma' },
+      step: { en: 'Wet your face with warm water. Apply a small amount, massage gently for 30 seconds, then rinse. Use morning and night.',
+              es: 'Moje su rostro con agua tibia. Aplique una pequeña cantidad, masajee suavemente por 30 segundos, luego enjuague. Use mañana y noche.' }
+    },
+    'vanicream': {
+      brand: 'Vanicream',
+      name: { en: 'Moisturizing Cream for Sensitive Skin', es: 'Crema Hidratante para Piel Sensible' },
+      step: { en: 'Apply a thin layer to face, neck, and any dry areas. Pat in gently.',
+              es: 'Aplique una capa delgada en rostro, cuello y áreas secas. Dé palmaditas suavemente.' }
+    },
+    'gold-bond-retinol': {
+      brand: 'Gold Bond',
+      name: { en: 'Age Renew Retinol Overnight Lotion', es: 'Loción Nocturna con Retinol Age Renew' },
+      step: { en: 'Use at night only. Apply a small amount to face and any rough areas. Start 2 to 3 nights a week.',
+              es: 'Use solo de noche. Aplique una pequeña cantidad en el rostro y áreas ásperas. Comience 2 o 3 noches por semana.' }
+    },
+    'cerave-itch-relief': {
+      brand: 'CeraVe',
+      name: { en: 'Itch Relief Moisturizing Cream', es: 'Crema Hidratante de Alivio de Picazón' },
+      step: { en: 'Apply to itchy or irritated areas as needed. Safe for face and body.',
+              es: 'Aplique en áreas con picazón o irritación según sea necesario. Seguro para rostro y cuerpo.' }
+    },
+    'eltamd': {
+      brand: 'EltaMD',
+      name: { en: 'UV Clear Tinted Sunscreen SPF 46', es: 'Protector Solar UV Clear con Tono SPF 46' },
+      step: { en: 'Apply generously to face and neck every morning, 15 minutes before going outside.',
+              es: 'Aplique generosamente en rostro y cuello cada mañana, 15 minutos antes de salir.' }
+    },
+    'supergoop': {
+      brand: 'Supergoop!',
+      name: { en: 'Unseen Sunscreen Stick SPF 40', es: 'Stick Protector Solar Unseen SPF 40' },
+      step: { en: 'Swipe directly on the skin in the morning. Reapply throughout the day, especially after being in the sun.',
+              es: 'Aplique directamente sobre la piel por la mañana. Reaplique durante el día, especialmente después de estar al sol.' }
+    },
+    'olay-spf30': {
+      brand: 'Olay',
+      name: { en: 'Complete Daily Moisturizer SPF 30', es: 'Hidratante Diario Complete SPF 30' },
+      step: { en: 'Apply to clean skin every morning. This product replaces both your moisturizer and sunscreen step.',
+              es: 'Aplique sobre la piel limpia cada mañana. Este producto reemplaza el paso de hidratante y protector solar.' }
+    },
+    'rogaine': {
+      brand: "Men's Rogaine",
+      name: { en: '5% Minoxidil Foam for Hair Regrowth', es: 'Espuma de Minoxidil 5% para el Cabello' },
+      step: { en: 'Apply ½ capful to a dry scalp twice a day — morning and night. Massage in gently.',
+              es: 'Aplique ½ tapa al cuero cabelludo seco dos veces al día — mañana y noche. Masajee suavemente.' }
+    }
+  };
+
+  // ============ Routine builder logic ============
+  function buildRoutine({ skinType, concern, notSure }) {
+    const am = ['cerave-cleanser'];
+    const pm = ['cerave-cleanser'];
+    const extras = [];
+    const tips = [];
+
+    const moisturizer = concern === 'dryness' ? 'cerave-itch-relief' : 'vanicream';
+
+    let amSpf;
+    if (skinType === 'sensitive' || notSure) {
+      amSpf = 'olay-spf30';
+    } else if (concern === 'sun' || skinType === 'oily' || skinType === 'combination') {
+      amSpf = 'eltamd';
+    } else {
+      amSpf = 'eltamd';
+    }
+
+    if (amSpf !== 'olay-spf30') am.push(moisturizer);
+    am.push(amSpf);
+
+    const safeForRetinol = skinType !== 'sensitive' && concern !== 'dryness' && !notSure;
+    if (concern === 'aging' && safeForRetinol) {
+      pm.push('gold-bond-retinol');
+      if (skinType === 'dry') pm.push(moisturizer);
+      tips.push('tipRetinol');
+    } else if (concern === 'dryness') {
+      pm.push('cerave-itch-relief');
+      tips.push('tipDryness');
+    } else {
+      pm.push(moisturizer);
+      if (skinType === 'dry') tips.push('tipDryness');
+    }
+
+    if (concern === 'hair') {
+      extras.push('rogaine');
+      tips.push('tipRogaine');
+    }
+    if (skinType === 'sensitive') tips.push('tipSensitive');
+    if (notSure) tips.push('tipNotSure');
+
+    return { am, pm, extras, tips };
+  }
+
+  // ============ State ============
+  let currentLang = 'en';
+  const answers = { skinType: null, concern: null, notSure: false };
+  let lastRoutine = null;
+  const t = () => i18n[currentLang];
+  const $ = id => document.getElementById(id);
+
+  // ============ Render ============
+  function applyTranslations() {
+    const T = t();
+
+    $('dq-eyebrow').textContent = T.eyebrow;
+    $('dq-title').textContent = T.title;
+    $('dq-sub').textContent = T.sub;
+    $('dq-q1').textContent = T.q1;
+    $('dq-q2').textContent = T.q2;
+    $('dq-btn-notsure').textContent = T.notSure;
+    $('dq-btn-next1').textContent = T.next;
+    $('dq-btn-back2').textContent = T.back;
+    $('dq-btn-submit').textContent = T.submit;
+    $('dq-results-title').textContent = T.resultsTitle;
+    $('dq-tips-label').textContent = T.tipsLabel;
+    $('dq-btn-restart').textContent = T.restart;
+    $('dq-btn-print').textContent = T.print;
+
+    renderOptions();
+    if (lastRoutine) renderResults();
+
+    // Hook for the rest of your page to also re-translate.
+    if (typeof window.onDanoLangChange === 'function') {
+      window.onDanoLangChange(currentLang);
+    }
+  }
+
+  function renderOptions() {
+    const T = t();
+
+    const skinBox = $('dq-opts-skintype');
+    skinBox.innerHTML = '';
+    Object.entries(T.skinType).forEach(([key, opt]) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'option-card' + (answers.skinType === key && !answers.notSure ? ' selected' : '');
+      b.innerHTML = `<span class="opt-label">${opt.label}</span><span class="opt-desc">${opt.desc}</span>`;
+      b.dataset.value = key;
+      b.addEventListener('click', () => {
+        answers.skinType = key;
+        answers.notSure = false;
+        skinBox.querySelectorAll('.option-card').forEach(x => x.classList.toggle('selected', x.dataset.value === key));
+        $('dq-btn-notsure').classList.remove('selected');
+        $('dq-btn-next1').disabled = false;
+      });
+      skinBox.appendChild(b);
+    });
+
+    const conBox = $('dq-opts-concern');
+    conBox.innerHTML = '';
+    Object.entries(T.concern).forEach(([key, opt]) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'option-card' + (answers.concern === key ? ' selected' : '');
+      b.innerHTML = `<span class="opt-label">${opt.label}</span><span class="opt-desc">${opt.desc}</span>`;
+      b.dataset.value = key;
+      b.addEventListener('click', () => {
+        answers.concern = key;
+        conBox.querySelectorAll('.option-card').forEach(x => x.classList.toggle('selected', x.dataset.value === key));
+        $('dq-btn-submit').disabled = false;
+      });
+      conBox.appendChild(b);
+    });
+  }
+
+  function renderResults() {
+    const T = t();
+    const r = lastRoutine;
+
+    const skinKey = answers.notSure ? 'sensitive' : answers.skinType;
+    $('dq-results-summary').textContent = T.summary(T.summaryLabels[skinKey], T.summaryLabels[answers.concern]);
+
+    const grid = $('dq-routine-grid');
+    const block = (title, icon, ids, extraClass = '') => {
+      if (!ids.length) return '';
+      return `
+        <div class="routine-block ${extraClass}">
+          <div class="routine-block-header">
+            <span class="routine-icon">${icon}</span>
+            <span class="routine-block-title">${title}</span>
+          </div>
+          ${ids.map((pid, i) => {
+            const p = products[pid];
+            return `
+              <div class="routine-step">
+                <span class="step-num">${i+1}</span>
+                <div class="step-info">
+                  <div class="step-brand">${p.brand}</div>
+                  <div class="step-name">${p.name[currentLang]}</div>
+                  <div class="step-use">${p.step[currentLang]}</div>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    };
+    grid.innerHTML = block(T.morning, '☀', r.am) + block(T.evening, '☾', r.pm) + block(T.additional, '+', r.extras, 'extras');
+
+    const tipsBox = $('dq-tips-box');
+    const tipsList = $('dq-tips-list');
+    if (r.tips.length) {
+      tipsList.innerHTML = r.tips.map(k => `<li>${T[k]}</li>`).join('');
+      tipsBox.hidden = false;
+    } else {
+      tipsBox.hidden = true;
+    }
+  }
+
+  function showStep(n) {
+    document.querySelectorAll('.dano-quiz .quiz-question').forEach(q => q.classList.toggle('active', +q.dataset.question === n));
+    document.querySelectorAll('#dq-progress .dot').forEach((d, i) => {
+      d.classList.toggle('active', i === n);
+      d.classList.toggle('done', i < n);
+    });
+  }
+
+  function submitQuiz() {
+    const effective = answers.notSure ? 'sensitive' : answers.skinType;
+    lastRoutine = buildRoutine({ skinType: effective, concern: answers.concern, notSure: answers.notSure });
+    $('dq-intro').style.display = 'none';
+    $('dq-results').classList.add('active');
+    renderResults();
+    $('dano-quiz').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function restartQuiz() {
+    answers.skinType = null;
+    answers.concern = null;
+    answers.notSure = false;
+    lastRoutine = null;
+    $('dq-intro').style.display = 'block';
+    $('dq-results').classList.remove('active');
+    $('dq-btn-next1').disabled = true;
+    $('dq-btn-submit').disabled = true;
+    $('dq-btn-notsure').classList.remove('selected');
+    renderOptions();
+    showStep(0);
+  }
+
+  // ============ Event listeners ============
+  $('dq-btn-next1').addEventListener('click', () => showStep(1));
+  $('dq-btn-back2').addEventListener('click', () => showStep(0));
+  $('dq-btn-submit').addEventListener('click', submitQuiz);
+  $('dq-btn-restart').addEventListener('click', restartQuiz);
+  $('dq-btn-print').addEventListener('click', () => window.print());
+
+  $('dq-btn-notsure').addEventListener('click', e => {
+    answers.notSure = true;
+    answers.skinType = 'sensitive';
+    document.querySelectorAll('#dq-opts-skintype .option-card').forEach(b => b.classList.remove('selected'));
+    e.currentTarget.classList.add('selected');
+    $('dq-btn-next1').disabled = false;
+  });
+
+  // Language toggle
+  document.querySelectorAll('#lang-toggle button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (currentLang === btn.dataset.lang) return;
+      currentLang = btn.dataset.lang;
+      document.querySelectorAll('#lang-toggle button').forEach(b => b.classList.toggle('active', b.dataset.lang === currentLang));
+      document.documentElement.lang = currentLang;
+      applyTranslations();
+    });
+  });
+
+  // Initial render
+  applyTranslations();
+})();
+</script>
+<!-- ▲▲▲ END PART 3 ▲▲▲ -->
+
+</body>
+</html>
   /* PRODUCTS */
   .products { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
   .product { background: var(--card); border: 1px solid var(--line); border-radius: 4px; display: flex; flex-direction: column; overflow: hidden; transition: transform 0.3s, box-shadow 0.3s; box-shadow: 0 1px 0 rgba(38,26,17,0.02), 0 8px 24px -16px rgba(38,26,17,0.08); }
