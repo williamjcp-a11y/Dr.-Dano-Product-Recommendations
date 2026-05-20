@@ -13,12 +13,13 @@
     --card: #FBF8F1;
     --card-2: #F6F1E5;
     --ink: #261A11;
-    --ink-soft: #6B5544;
-    --ink-mute: #9C8975;
+    --ink-soft: #5A4633;
+    --ink-mute: #8A7461;
     --accent: #B8643E;
     --accent-deep: #8C4524;
-    --line: #D9CFC0;
-    --line-soft: #E5DDCE;
+    --sage: #6F8054;
+    --line: #C9BFAF;
+    --line-soft: #DDD3C2;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
@@ -27,82 +28,326 @@
     color: var(--ink);
     font-family: 'Inter Tight', sans-serif;
     font-weight: 400;
-    line-height: 1.5;
+    line-height: 1.55;
+    font-size: 17px;
     -webkit-font-smoothing: antialiased;
     background-image:
       radial-gradient(ellipse at top left, rgba(184,100,62,0.06), transparent 50%),
-      radial-gradient(ellipse at bottom right, rgba(139,154,110,0.05), transparent 60%);
+      radial-gradient(ellipse at bottom right, rgba(111,128,84,0.05), transparent 60%);
     min-height: 100vh;
   }
-  .wrap { max-width: 1140px; margin: 0 auto; padding: 48px 24px 80px; }
+  .wrap { max-width: 1140px; margin: 0 auto; padding: 56px 24px 80px; position: relative; }
+
+  /* ==== LANG TOGGLE ==== */
+  .lang-toggle {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    display: flex;
+    background: var(--card);
+    border: 1.5px solid var(--line);
+    border-radius: 999px;
+    padding: 4px;
+    z-index: 10;
+  }
+  .lang-toggle button {
+    background: none;
+    border: 0;
+    padding: 10px 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    color: var(--ink-mute);
+    cursor: pointer;
+    border-radius: 999px;
+    transition: all 0.2s;
+    min-height: 44px;
+  }
+  .lang-toggle button.active { background: var(--ink); color: var(--bg); }
+  .lang-toggle button:not(.active):hover { color: var(--accent-deep); }
 
   /* HEADER */
-  header { text-align: center; padding-bottom: 40px; border-bottom: 1px solid var(--line); margin-bottom: 56px; }
-  .brand { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--accent-deep); margin-bottom: 22px; display: inline-flex; align-items: center; gap: 12px; }
-  .brand::before, .brand::after { content: ''; width: 28px; height: 1px; background: var(--accent-deep); display: inline-block; }
-  h1 { font-family: 'Fraunces', serif; font-weight: 400; font-size: clamp(40px, 7vw, 72px); line-height: 0.98; letter-spacing: -0.02em; margin-bottom: 20px; }
+  header { text-align: center; padding: 32px 0 48px; border-bottom: 1px solid var(--line); margin-bottom: 56px; }
+  .brand { font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent-deep); margin-bottom: 24px; display: inline-flex; align-items: center; gap: 14px; font-weight: 500; }
+  .brand::before, .brand::after { content: ''; width: 32px; height: 1px; background: var(--accent-deep); display: inline-block; }
+  h1 { font-family: 'Fraunces', serif; font-weight: 400; font-size: clamp(44px, 7vw, 76px); line-height: 0.98; letter-spacing: -0.02em; margin-bottom: 24px; }
   h1 em { font-style: italic; font-weight: 300; color: var(--accent); }
-  .lead { font-family: 'Fraunces', serif; font-style: italic; font-weight: 300; font-size: clamp(17px, 2.2vw, 21px); color: var(--ink-soft); max-width: 580px; margin: 0 auto; line-height: 1.45; }
+  .lead { font-family: 'Fraunces', serif; font-style: italic; font-weight: 300; font-size: clamp(19px, 2.2vw, 23px); color: var(--ink-soft); max-width: 620px; margin: 0 auto 36px; line-height: 1.5; }
+  .cta-quiz {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--ink);
+    color: var(--bg);
+    border: 0;
+    padding: 18px 36px;
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 17px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-height: 56px;
+  }
+  .cta-quiz:hover { background: var(--accent-deep); transform: translateY(-1px); }
+
+  /* ==== QUIZ ==== */
+  .quiz-section { margin-bottom: 80px; scroll-margin-top: 20px; }
+  .quiz-card {
+    background: linear-gradient(135deg, #FBF8F1 0%, #F6F1E5 100%);
+    border: 1.5px solid var(--line);
+    border-radius: 8px;
+    padding: 56px 48px;
+    box-shadow: 0 1px 0 rgba(38,26,17,0.02), 0 20px 50px -24px rgba(38,26,17,0.14);
+    position: relative;
+    overflow: hidden;
+  }
+  .quiz-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 4px;
+    background: linear-gradient(90deg, var(--accent), var(--sage), var(--accent));
+  }
+  .quiz-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; text-align: center; font-weight: 500; }
+  .quiz-title { font-family: 'Fraunces', serif; font-weight: 400; font-size: clamp(32px, 4.5vw, 44px); line-height: 1.1; text-align: center; margin-bottom: 16px; letter-spacing: -0.01em; }
+  .quiz-sub { text-align: center; color: var(--ink-soft); font-size: 17px; max-width: 520px; margin: 0 auto 40px; line-height: 1.55; }
+  .quiz-progress { display: flex; justify-content: center; gap: 10px; margin-bottom: 40px; }
+  .quiz-progress .dot { width: 48px; height: 5px; background: var(--line); border-radius: 3px; transition: background 0.3s; }
+  .quiz-progress .dot.active { background: var(--accent); }
+  .quiz-progress .dot.done { background: var(--sage); }
+  .quiz-question { display: none; max-width: 700px; margin: 0 auto; }
+  .quiz-question.active { display: block; }
+  .quiz-question h3 { font-family: 'Fraunces', serif; font-weight: 400; font-size: clamp(24px, 3vw, 30px); text-align: center; margin-bottom: 36px; line-height: 1.25; letter-spacing: -0.005em; color: var(--ink); }
+  .options-list { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; }
+  .option-card {
+    background: #fff;
+    border: 2px solid var(--line);
+    padding: 22px 24px;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.18s;
+    font-family: 'Inter Tight', sans-serif;
+    border-radius: 8px;
+    min-height: 88px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color: var(--ink);
+  }
+  .option-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 8px 24px -12px rgba(184,100,62,0.25); }
+  .option-card:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  .option-card.selected { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .option-card .opt-label { font-size: 19px; font-weight: 500; margin-bottom: 6px; display: block; letter-spacing: -0.005em; }
+  .option-card .opt-desc { font-size: 15px; color: var(--ink-soft); line-height: 1.45; }
+  .option-card.selected .opt-desc { color: rgba(241, 236, 226, 0.78); }
+  .not-sure-row { display: flex; justify-content: center; margin-bottom: 32px; }
+  .not-sure-btn {
+    background: transparent;
+    border: 1.5px dashed var(--line);
+    padding: 14px 24px;
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 15px;
+    color: var(--ink-soft);
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-height: 48px;
+  }
+  .not-sure-btn:hover { border-color: var(--accent); color: var(--accent-deep); border-style: solid; }
+  .not-sure-btn.selected { background: var(--sage); color: #fff; border-color: var(--sage); border-style: solid; }
+  .quiz-nav { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 16px; }
+  .nav-btn {
+    background: none;
+    border: 1.5px solid var(--line);
+    padding: 14px 28px;
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--ink-soft);
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-height: 52px;
+  }
+  .nav-btn:hover { color: var(--accent-deep); border-color: var(--accent); }
+  .nav-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .nav-btn.primary { background: var(--ink); color: var(--bg); border-color: var(--ink); padding: 14px 32px; }
+  .nav-btn.primary:hover:not(:disabled) { background: var(--accent-deep); border-color: var(--accent-deep); }
+
+  /* RESULTS */
+  .quiz-results { display: none; }
+  .quiz-results.active { display: block; }
+  .results-header { text-align: center; margin-bottom: 40px; }
+  .results-header h3 { font-family: 'Fraunces', serif; font-weight: 400; font-size: clamp(30px, 4vw, 40px); margin-bottom: 10px; letter-spacing: -0.01em; }
+  .results-header .summary { font-family: 'Fraunces', serif; font-style: italic; font-weight: 300; color: var(--ink-soft); font-size: 18px; }
+  .routine-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 28px; }
+  .routine-block { background: #fff; border: 1.5px solid var(--line); border-radius: 6px; padding: 28px 26px; }
+  .routine-block.extras { grid-column: 1 / -1; background: var(--card-2); }
+  .routine-block-header { display: flex; align-items: center; gap: 12px; padding-bottom: 18px; border-bottom: 1px solid var(--line-soft); margin-bottom: 20px; }
+  .routine-icon { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; background: var(--bg); border-radius: 50%; font-size: 18px; }
+  .routine-block-title { font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink); font-weight: 500; }
+  .routine-step { display: flex; align-items: flex-start; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--line-soft); }
+  .routine-step:last-child { border-bottom: 0; padding-bottom: 0; }
+  .step-num { flex-shrink: 0; width: 32px; height: 32px; background: var(--ink); color: var(--bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500; }
+  .step-info { flex: 1; min-width: 0; }
+  .step-brand { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; font-weight: 500; }
+  .step-name { font-family: 'Fraunces', serif; font-size: 17px; line-height: 1.3; color: var(--ink); margin-bottom: 4px; }
+  .step-use { font-size: 14px; color: var(--ink-soft); line-height: 1.5; }
+  .tips { background: var(--card); border: 1.5px solid var(--line); border-left: 4px solid var(--sage); border-radius: 6px; padding: 22px 26px; margin-bottom: 28px; }
+  .tips-label { font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--sage); margin-bottom: 12px; font-weight: 500; }
+  .tips ul { list-style: none; }
+  .tips li { font-size: 15px; color: var(--ink-soft); line-height: 1.55; padding: 6px 0; }
+  .tips li::before { content: '— '; color: var(--sage); font-weight: 500; }
+  .results-actions { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; }
 
   /* NAV */
-  .catnav { display: flex; justify-content: center; gap: 4px; flex-wrap: wrap; margin-bottom: 64px; }
-  .catnav a { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-soft); text-decoration: none; padding: 10px 18px; border: 1px solid var(--line); border-radius: 999px; background: var(--card); transition: all 0.2s; }
+  .catnav { display: flex; justify-content: center; gap: 6px; flex-wrap: wrap; margin-bottom: 56px; }
+  .catnav a { font-family: 'Inter Tight', sans-serif; font-size: 14px; font-weight: 500; letter-spacing: 0.04em; color: var(--ink-soft); text-decoration: none; padding: 12px 22px; border: 1.5px solid var(--line); border-radius: 999px; background: var(--card); transition: all 0.2s; min-height: 44px; display: flex; align-items: center; }
   .catnav a:hover { color: var(--accent-deep); border-color: var(--accent); background: #fff; }
 
   /* CATEGORY */
-  section.category { margin-bottom: 88px; }
+  section.category { margin-bottom: 96px; }
   .cat-header { display: flex; align-items: baseline; gap: 20px; margin-bottom: 36px; padding-bottom: 18px; border-bottom: 1px solid var(--line); }
-  .cat-num { font-family: 'Fraunces', serif; font-style: italic; font-weight: 300; font-size: 28px; color: var(--ink-mute); }
-  .cat-title { font-family: 'Fraunces', serif; font-weight: 400; font-size: clamp(28px, 4vw, 40px); line-height: 1; letter-spacing: -0.01em; flex: 1; }
-  .cat-count { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-mute); }
-  .cat-desc { font-size: 15px; color: var(--ink-soft); margin-bottom: 32px; max-width: 640px; line-height: 1.55; }
+  .cat-num { font-family: 'Fraunces', serif; font-style: italic; font-weight: 300; font-size: 30px; color: var(--ink-mute); }
+  .cat-title { font-family: 'Fraunces', serif; font-weight: 400; font-size: clamp(30px, 4vw, 42px); line-height: 1; letter-spacing: -0.01em; flex: 1; }
+  .cat-count { font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-mute); }
+  .cat-desc { font-size: 16px; color: var(--ink-soft); margin-bottom: 36px; max-width: 680px; line-height: 1.6; }
 
   /* PRODUCTS */
   .products { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
-  .product { background: var(--card); border: 1px solid var(--line); border-radius: 4px; display: flex; flex-direction: column; overflow: hidden; transition: transform 0.3s, box-shadow 0.3s; box-shadow: 0 1px 0 rgba(38,26,17,0.02), 0 8px 24px -16px rgba(38,26,17,0.08); }
+  .product { background: var(--card); border: 1.5px solid var(--line); border-radius: 6px; display: flex; flex-direction: column; overflow: hidden; transition: transform 0.3s, box-shadow 0.3s; box-shadow: 0 1px 0 rgba(38,26,17,0.02), 0 8px 24px -16px rgba(38,26,17,0.08); }
   .product:hover { transform: translateY(-2px); box-shadow: 0 1px 0 rgba(38,26,17,0.04), 0 16px 36px -16px rgba(38,26,17,0.14); }
   .product-image { aspect-ratio: 4/3; background: var(--card-2); background-image: radial-gradient(ellipse at 30% 30%, rgba(255,255,255,0.8), transparent 60%), radial-gradient(ellipse at 70% 80%, rgba(184,100,62,0.08), transparent 60%); display: flex; align-items: center; justify-content: center; border-bottom: 1px solid var(--line-soft); position: relative; overflow: hidden; }
   .product-image img { width: 100%; height: 100%; object-fit: contain; padding: 16px; }
   .product-image .ph-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; }
   .product-image svg.ph { width: 60%; max-width: 130px; height: auto; }
-  .product-image .ph-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-mute); }
-  .product-info { padding: 22px 22px 24px; flex-grow: 1; display: flex; flex-direction: column; }
-  .product-brand { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
-  .product-name { font-family: 'Fraunces', serif; font-weight: 400; font-size: 20px; line-height: 1.2; letter-spacing: -0.005em; margin-bottom: 12px; color: var(--ink); }
-  .product-use { font-size: 13.5px; color: var(--ink-soft); line-height: 1.5; flex-grow: 1; }
+  .product-image .ph-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-mute); }
+  .product-info { padding: 24px 24px 26px; flex-grow: 1; display: flex; flex-direction: column; }
+  .product-brand { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; font-weight: 500; }
+  .product-name { font-family: 'Fraunces', serif; font-weight: 400; font-size: 22px; line-height: 1.2; letter-spacing: -0.005em; margin-bottom: 14px; color: var(--ink); }
+  .product-use { font-size: 15px; color: var(--ink-soft); line-height: 1.55; flex-grow: 1; }
 
   /* FOOTER */
-  footer { margin-top: 56px; padding-top: 36px; border-top: 1px solid var(--line); text-align: center; }
+  footer { margin-top: 64px; padding-top: 40px; border-top: 1px solid var(--line); text-align: center; }
   .ornament { color: var(--accent); letter-spacing: 0.4em; margin-bottom: 16px; }
-  footer p { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-mute); line-height: 1.8; }
+  footer p { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-mute); line-height: 1.8; font-weight: 500; }
   footer strong { color: var(--ink-soft); font-weight: 500; }
-  .disclaimer { margin-top: 24px; font-family: 'Fraunces', serif; font-style: italic; font-weight: 300; font-size: 13px; color: var(--ink-mute); max-width: 540px; margin-left: auto; margin-right: auto; line-height: 1.5; letter-spacing: 0; text-transform: none; }
+  .disclaimer { margin-top: 24px; font-family: 'Fraunces', serif; font-style: italic; font-weight: 300; font-size: 15px; color: var(--ink-mute); max-width: 580px; margin-left: auto; margin-right: auto; line-height: 1.55; letter-spacing: 0; text-transform: none; }
 
-  @media (max-width: 880px) { .products { grid-template-columns: repeat(2, 1fr); } }
-  @media (max-width: 560px) { .wrap { padding: 32px 18px 56px; } .products { grid-template-columns: 1fr; gap: 18px; } .catnav { margin-bottom: 48px; } section.category { margin-bottom: 64px; } .product-image { aspect-ratio: 16/10; } }
+  /* RESPONSIVE */
+  @media (max-width: 880px) { .products { grid-template-columns: repeat(2, 1fr); } .routine-grid { grid-template-columns: 1fr; } .quiz-card { padding: 40px 28px; } }
+  @media (max-width: 600px) {
+    body { font-size: 16px; }
+    .wrap { padding: 36px 18px 56px; }
+    .products { grid-template-columns: 1fr; gap: 20px; }
+    .options-list { grid-template-columns: 1fr; }
+    .catnav { margin-bottom: 48px; }
+    section.category { margin-bottom: 72px; }
+    .product-image { aspect-ratio: 16/10; }
+    .quiz-card { padding: 32px 22px; }
+    .lang-toggle { top: 18px; right: 18px; }
+    .lang-toggle button { padding: 8px 16px; font-size: 13px; }
+    .quiz-nav { flex-direction: column-reverse; align-items: stretch; }
+    .quiz-nav .nav-btn { width: 100%; }
+  }
+
+  /* PRINT (just the routine) */
+  @media print {
+    body { background: #fff; font-size: 14px; }
+    .lang-toggle, .cta-quiz, header .brand, header h1, .lead, .catnav, section.category, footer, .quiz-progress, .results-actions, .quiz-question { display: none !important; }
+    .quiz-card { border: none; box-shadow: none; padding: 0; background: none; }
+    .quiz-card::before { display: none; }
+    .quiz-section { margin: 0; }
+    .quiz-results.active { display: block !important; }
+    .routine-block { break-inside: avoid; border-color: #999; }
+  }
 </style>
 </head>
 <body>
 <div class="wrap">
+
+  <div class="lang-toggle" role="group" aria-label="Language">
+    <button data-lang="en" class="active" type="button">EN</button>
+    <button data-lang="es" type="button">ES</button>
+  </div>
+
   <header>
     <div class="brand">Dr. Dano Dermatology</div>
-    <h1>Recommended<br><em>Skincare</em></h1>
-    <p class="lead">Dermatologist-curated products for healthy skin — selected by Dr. Dano for everyday use.</p>
+    <h1 id="t-headline"></h1>
+    <p class="lead" id="t-lead"></p>
+    <button class="cta-quiz" id="cta-quiz" type="button"></button>
   </header>
-  <nav class="catnav">
-    <a href="#moisturizers" data-target="moisturizers">Moisturizers</a>
-    <a href="#sunscreens" data-target="sunscreens">Sunscreens</a>
-    <a href="#cleansers" data-target="cleansers">Cleansers & Treatments</a>
-  </nav>
+
+  <section class="quiz-section" id="quiz">
+    <div class="quiz-card">
+      <div id="quiz-intro">
+        <div class="quiz-eyebrow" id="t-quiz-eyebrow"></div>
+        <h2 class="quiz-title" id="t-quiz-title"></h2>
+        <p class="quiz-sub" id="t-quiz-sub"></p>
+
+        <div class="quiz-progress" id="quiz-progress">
+          <span class="dot active"></span>
+          <span class="dot"></span>
+        </div>
+
+        <div class="quiz-question active" data-question="0">
+          <h3 id="t-q1"></h3>
+          <div class="options-list" id="opts-skintype"></div>
+          <div class="not-sure-row">
+            <button class="not-sure-btn" id="btn-not-sure" type="button"></button>
+          </div>
+          <div class="quiz-nav">
+            <span></span>
+            <button class="nav-btn primary" id="btn-next-1" disabled type="button"></button>
+          </div>
+        </div>
+
+        <div class="quiz-question" data-question="1">
+          <h3 id="t-q2"></h3>
+          <div class="options-list" id="opts-concern"></div>
+          <div class="quiz-nav">
+            <button class="nav-btn" id="btn-back-2" type="button"></button>
+            <button class="nav-btn primary" id="btn-submit" disabled type="button"></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="quiz-results" id="quiz-results">
+        <div class="results-header">
+          <h3 id="t-results-title"></h3>
+          <p class="summary" id="results-summary"></p>
+        </div>
+        <div class="routine-grid" id="routine-grid"></div>
+        <div class="tips" id="tips-box" hidden>
+          <div class="tips-label" id="t-tips-label"></div>
+          <ul id="tips-list"></ul>
+        </div>
+        <div class="results-actions">
+          <button class="nav-btn" id="btn-restart" type="button"></button>
+          <button class="nav-btn primary" id="btn-print" type="button"></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <nav class="catnav" id="catnav"></nav>
   <main id="main"></main>
+
   <footer>
     <div class="ornament">· · ·</div>
-    <p><strong>Dr. Dano Dermatology</strong><br>Curated Selections · Updated <span id="date"></span></p>
-    <p class="disclaimer">These recommendations are general suggestions. Please consult Dr. Dano about products best suited to your individual skin needs.</p>
+    <p>
+      <strong id="t-footer-brand">Dr. Dano Dermatology</strong><br>
+      <span id="t-footer-meta"></span>
+    </p>
+    <p class="disclaimer" id="t-disclaimer"></p>
   </footer>
+
 </div>
 
-<!-- SVG SYMBOLS -->
+<!-- SVG SYMBOLS (fallback placeholders if any image URL fails) -->
 <svg style="display:none">
   <defs>
     <symbol id="ic-bottle" viewBox="0 0 100 140">
@@ -144,153 +389,504 @@
 </svg>
 
 <script>
-// =============================================================
-// PRODUCT DATA
-// To swap in an image: set the `image` field to any direct URL.
-// Images that fail to load automatically show the SVG placeholder.
-// =============================================================
+// ===================================================================
+// i18n — all translatable UI text
+// ===================================================================
+const i18n = {
+  en: {
+    headline: 'Recommended<br><em>Skincare</em>',
+    lead: 'Dermatologist-curated products for healthy skin — selected by Dr. Dano for everyday use. Answer two quick questions to get your personalized routine.',
+    ctaQuiz: 'Get My Routine →',
+    quizEyebrow: 'Your Personalized Plan',
+    quizTitle: 'Find Your Skincare Routine',
+    quizSub: 'Two quick questions. Each one takes a few seconds. There are no wrong answers.',
+    q1: 'How does your skin usually feel?',
+    q2: 'What matters most to you?',
+    notSure: "I'm not sure — help me pick",
+    next: 'Next →',
+    back: '← Back',
+    submit: 'Show My Routine →',
+    resultsTitle: 'Your Daily Skincare Routine',
+    summary: (s, c) => `For ${s} skin, focused on ${c}.`,
+    morning: 'Morning Routine',
+    evening: 'Evening Routine',
+    additional: 'Extra Treatment',
+    tipsLabel: 'Notes from Dr. Dano',
+    restart: '↻ Start Over',
+    print: '⎙ Print This Page',
+    catNav: { moisturizers: 'Moisturizers', sunscreens: 'Sunscreens', cleansers: 'Cleansers & Treatments' },
+    productWord: (n) => `${n} ${n === 1 ? 'Product' : 'Products'}`,
+    footerBrand: 'Dr. Dano Dermatology',
+    footerMeta: 'Curated Selections · Updated ',
+    disclaimer: 'These recommendations are general suggestions. Please consult Dr. Dano about products best suited to your individual skin needs.',
+    skinType: {
+      dry: { label: 'Dry', desc: 'Feels tight, flaky, or rough most of the time' },
+      normal: { label: 'Normal', desc: 'Feels comfortable, not too dry or too oily' },
+      oily: { label: 'Oily', desc: 'Looks shiny or feels greasy by midday' },
+      combination: { label: 'Combination', desc: 'Oily on the forehead and nose, dry on the cheeks' },
+      sensitive: { label: 'Sensitive', desc: 'Often turns red, stings, or reacts to new products' }
+    },
+    concern: {
+      dryness: { label: 'Dryness or itching', desc: 'Skin often feels dry, itchy, or irritated' },
+      aging: { label: 'Wrinkles or sun damage', desc: 'Fine lines, age spots, or skin texture' },
+      sun: { label: 'Sun protection', desc: 'Daily protection from the sun is the priority' },
+      hair: { label: 'Hair thinning', desc: 'Want to treat thinning hair' }
+    },
+    summaryLabels: {
+      dry: 'dry', normal: 'normal', oily: 'oily', combination: 'combination', sensitive: 'sensitive',
+      dryness: 'dryness and itching', aging: 'wrinkles and sun damage', sun: 'sun protection', hair: 'hair thinning'
+    },
+    tipRetinol: 'Use the retinol lotion only 2 to 3 nights a week to start. Always wear sunscreen the next morning — retinol makes skin more sensitive to the sun.',
+    tipSensitive: 'Try any new product on a small spot first for 2 to 3 days to make sure it agrees with your skin.',
+    tipRogaine: 'Use the foam twice a day for at least 4 months to see results. Keep using it to maintain hair regrowth.',
+    tipDryness: 'Apply moisturizer right after washing, while skin is still slightly damp. This locks in more moisture.',
+    tipNotSure: 'We picked the gentlest products for you. Please ask Dr. Dano at your next visit for a more personalized plan.'
+  },
+  es: {
+    headline: 'Cuidado<br><em>de la Piel</em>',
+    lead: 'Productos seleccionados por dermatólogo para una piel saludable — elegidos por Dr. Dano para uso diario. Responda dos preguntas rápidas para obtener su rutina personalizada.',
+    ctaQuiz: 'Obtener Mi Rutina →',
+    quizEyebrow: 'Su Plan Personalizado',
+    quizTitle: 'Encuentre Su Rutina',
+    quizSub: 'Dos preguntas rápidas. Cada una toma unos segundos. No hay respuestas incorrectas.',
+    q1: '¿Cómo se siente su piel normalmente?',
+    q2: '¿Qué es lo más importante para usted?',
+    notSure: 'No estoy seguro/a — ayúdeme a elegir',
+    next: 'Siguiente →',
+    back: '← Atrás',
+    submit: 'Mostrar Mi Rutina →',
+    resultsTitle: 'Su Rutina Diaria',
+    summary: (s, c) => `Para piel ${s}, enfocada en ${c}.`,
+    morning: 'Rutina de la Mañana',
+    evening: 'Rutina de la Noche',
+    additional: 'Tratamiento Adicional',
+    tipsLabel: 'Notas del Dr. Dano',
+    restart: '↻ Empezar de Nuevo',
+    print: '⎙ Imprimir Esta Página',
+    catNav: { moisturizers: 'Hidratantes', sunscreens: 'Protectores Solares', cleansers: 'Limpiadores y Tratamientos' },
+    productWord: (n) => `${n} ${n === 1 ? 'Producto' : 'Productos'}`,
+    footerBrand: 'Dr. Dano Dermatología',
+    footerMeta: 'Selecciones Curadas · Actualizado ',
+    disclaimer: 'Estas recomendaciones son sugerencias generales. Por favor consulte con Dr. Dano sobre los productos más adecuados para sus necesidades individuales.',
+    skinType: {
+      dry: { label: 'Seca', desc: 'Se siente tensa, escamosa o áspera la mayoría del tiempo' },
+      normal: { label: 'Normal', desc: 'Se siente cómoda, ni muy seca ni muy grasa' },
+      oily: { label: 'Grasa', desc: 'Se ve brillante o se siente grasosa a media tarde' },
+      combination: { label: 'Mixta', desc: 'Grasa en la frente y nariz, seca en las mejillas' },
+      sensitive: { label: 'Sensible', desc: 'A menudo se enrojece, escuece o reacciona a productos nuevos' }
+    },
+    concern: {
+      dryness: { label: 'Sequedad o picazón', desc: 'La piel se siente seca, picante o irritada con frecuencia' },
+      aging: { label: 'Arrugas o daño solar', desc: 'Líneas finas, manchas de edad, o textura de la piel' },
+      sun: { label: 'Protección solar', desc: 'La protección diaria contra el sol es la prioridad' },
+      hair: { label: 'Pérdida de cabello', desc: 'Tratar el cabello que se está adelgazando' }
+    },
+    summaryLabels: {
+      dry: 'seca', normal: 'normal', oily: 'grasa', combination: 'mixta', sensitive: 'sensible',
+      dryness: 'la sequedad y picazón', aging: 'las arrugas y el daño solar', sun: 'la protección solar', hair: 'la pérdida de cabello'
+    },
+    tipRetinol: 'Use la loción con retinol solo 2 o 3 noches por semana al principio. Siempre use protector solar la mañana siguiente — el retinol hace que la piel sea más sensible al sol.',
+    tipSensitive: 'Pruebe cualquier producto nuevo en un área pequeña primero durante 2 o 3 días para asegurarse de que su piel lo tolere bien.',
+    tipRogaine: 'Use la espuma dos veces al día durante al menos 4 meses para ver resultados. Continúe usándola para mantener el crecimiento del cabello.',
+    tipDryness: 'Aplique la crema justo después de lavarse, cuando la piel todavía está un poco húmeda. Esto retiene más humedad.',
+    tipNotSure: 'Hemos elegido los productos más suaves para usted. Por favor consulte con Dr. Dano en su próxima visita para un plan más personalizado.'
+  }
+};
+
+// ===================================================================
+// PRODUCTS — bilingual + flat lookup for the routine builder
+// (Image URLs preserved exactly as you had them.)
+// ===================================================================
+const products = {
+  'vanicream': {
+    brand: 'Vanicream', placeholder: 'ic-jar',
+    image: 'https://www.vanicream.com/dynamic-media/product/images/pump-tc22o-front.jpg?gravity=center&v=galleryZoom&k=5aLU6GBqjU8TPTPIqBrsIg',
+    name: { en: 'Moisturizing Cream for Sensitive Skin', es: 'Crema Hidratante para Piel Sensible' },
+    use: { en: 'Fragrance-free daily moisturizer with pump dispenser — free of dyes, parabens, and lanolin.',
+           es: 'Hidratante diario sin fragancia con dispensador de bomba — libre de tintes, parabenos y lanolina.' },
+    step: { en: 'Apply a thin layer to face, neck, and any dry areas. Pat in gently.',
+            es: 'Aplique una capa delgada en rostro, cuello y áreas secas. Dé palmaditas suavemente.' }
+  },
+  'gold-bond-retinol': {
+    brand: 'Gold Bond', placeholder: 'ic-tube',
+    image: 'https://www.goldbond.com/dam/jcr:837b14c0-c7a3-44d7-971a-64f57698e888/GoldBond_RetinolOvernight_7oz_Tube_F_Thumb.webp',
+    name: { en: 'Age Renew Retinol Overnight Body & Face Lotion', es: 'Loción Nocturna con Retinol Age Renew' },
+    use: { en: 'Overnight smoothing and texture renewal with stabilized retinol & peptide complex.',
+           es: 'Suavizado y renovación nocturna con complejo de retinol estabilizado y péptidos.' },
+    step: { en: 'Use at night only. Apply a small amount to face and any rough areas. Start 2 to 3 nights a week.',
+            es: 'Use solo de noche. Aplique una pequeña cantidad en el rostro y áreas ásperas. Comience 2 o 3 noches por semana.' }
+  },
+  'cerave-itch-relief': {
+    brand: 'CeraVe', placeholder: 'ic-jar',
+    image: 'https://www.lorealdermatologicalbeauty.us/-/media/Foundation/Products/PLPImages/UID2000179.png?h=625&iar=0&w=500&hash=DE9A3A82BFD42611F60ED1F1E1F286D2',
+    name: { en: 'Itch Relief Moisturizing Cream', es: 'Crema Hidratante de Alivio de Picazón' },
+    use: { en: 'Hydrates and soothes itchy, dry, or irritated skin with ceramides and pramoxine HCl.',
+           es: 'Hidrata y calma la piel con picazón, seca o irritada con ceramidas y pramoxina HCl.' },
+    step: { en: 'Apply to itchy or irritated areas as needed. Safe for face and body.',
+            es: 'Aplique en áreas con picazón o irritación según sea necesario. Seguro para rostro y cuerpo.' }
+  },
+  'eltamd': {
+    brand: 'EltaMD', placeholder: 'ic-spf',
+    image: 'https://bluemercury.com/cdn/shop/files/variant_images-size-Tinted-390205025206-1_a64bfffe-c842-41ac-b7d2-aae8f95c1c80.jpg',
+    name: { en: 'UV Clear Broad-Spectrum SPF 46 Tinted', es: 'UV Clear SPF 46 con Tono' },
+    use: { en: 'Lightweight tinted sunscreen for acne-prone and sensitive skin, with 5% niacinamide.',
+           es: 'Protector solar liviano con tono para piel propensa al acné y sensible, con 5% de niacinamida.' },
+    step: { en: 'Apply generously to face and neck every morning, 15 minutes before going outside.',
+            es: 'Aplique generosamente en rostro y cuello cada mañana, 15 minutos antes de salir.' }
+  },
+  'supergoop': {
+    brand: 'Supergoop!', placeholder: 'ic-tube',
+    image: 'https://cdn.shopify.com/s/files/1/1503/5658/files/UnseenSunscreenStick_Alt_01_new.jpg?v=1716989664',
+    name: { en: 'Unseen Sunscreen Stick SPF 40', es: 'Stick Protector Solar Unseen SPF 40' },
+    use: { en: 'Travel-friendly invisible stick glides over makeup with zero white cast and a natural finish.',
+           es: 'Stick invisible portátil que se desliza sobre el maquillaje sin dejar rastro blanco y con acabado natural.' },
+    step: { en: 'Swipe directly on the skin in the morning. Reapply throughout the day, especially after being in the sun.',
+            es: 'Aplique directamente sobre la piel por la mañana. Reaplique durante el día, especialmente después de estar al sol.' }
+  },
+  'olay-spf30': {
+    brand: 'Olay', placeholder: 'ic-pump',
+    image: 'https://cdn11.bigcommerce.com/s-gud7r2x2lu/images/stencil/960w/products/525/8490/MOI_Olay_EN_CompleteLightweightLotionSPF30Sensitive_2.5oz__08982.1756232318.jpg?c=2',
+    name: { en: 'Complete UV365 Daily Moisturizer SPF 30', es: 'Hidratante Diario Complete UV365 SPF 30' },
+    use: { en: 'Lightweight 2-in-1 daily moisturizer with broad-spectrum UVA/UVB protection.',
+           es: 'Hidratante diario 2 en 1 liviano con protección de amplio espectro UVA/UVB.' },
+    step: { en: 'Apply to clean skin every morning. This product replaces both your moisturizer and sunscreen step.',
+            es: 'Aplique sobre la piel limpia cada mañana. Este producto reemplaza el paso de hidratante y protector solar.' }
+  },
+  'cerave-cleanser': {
+    brand: 'CeraVe', placeholder: 'ic-pump',
+    image: 'https://www.cerave.com/-/media/project/loreal/brand-sites/cerave/americas/us/skincare/cleansers/hydrating-cream-to-foam-cleanser/hydrating-cream-to-foam-cleanser_front.jpg',
+    name: { en: 'Hydrating Cream-to-Foam Cleanser', es: 'Limpiador Hidratante de Crema a Espuma' },
+    use: { en: 'Removes makeup and impurities with ceramides and hyaluronic acid — without stripping the skin barrier.',
+           es: 'Elimina maquillaje e impurezas con ceramidas y ácido hialurónico — sin dañar la barrera de la piel.' },
+    step: { en: 'Wet your face with warm water. Apply a small amount, massage gently for 30 seconds, then rinse. Use morning and night.',
+            es: 'Moje su rostro con agua tibia. Aplique una pequeña cantidad, masajee suavemente por 30 segundos, luego enjuague. Use mañana y noche.' }
+  },
+  'rogaine': {
+    brand: "Men's Rogaine", placeholder: 'ic-bottle',
+    image: 'https://images.ctfassets.net/t975yazu1avh/3luXrziUsmtguOFJXZ3Bmr/6730570138bd42f6803ff6d00afae160/rog_mens_1month_202401-1-new_702d6fc3-8d70-4b7c-a2ea-3c51d59b43ab.webp',
+    name: { en: '5% Minoxidil Foam Hair Regrowth Treatment', es: 'Espuma de Minoxidil 5% para el Crecimiento del Cabello' },
+    use: { en: 'Clinically proven topical aerosol foam that reactivates hair follicles to stimulate regrowth.',
+           es: 'Espuma tópica en aerosol clínicamente probada que reactiva los folículos pilosos para estimular el crecimiento.' },
+    step: { en: 'Apply ½ capful to a dry scalp twice a day — morning and night. Massage in gently.',
+            es: 'Aplique ½ tapa al cuero cabelludo seco dos veces al día — mañana y noche. Masajee suavemente.' }
+  }
+};
+
+// ===================================================================
+// CATEGORIES
+// ===================================================================
 const categories = [
   {
     id: 'moisturizers',
     number: '01',
-    title: 'Moisturizers',
-    desc: 'Daily hydration for face and body — including a gentle retinol option for overnight repair and a formula for itch-prone skin.',
-    products: [
-      {
-        brand: 'Vanicream',
-        name: 'Moisturizing Cream for Sensitive Skin',
-        use: 'Fragrance-free daily moisturizer with pump dispenser — free of dyes, parabens, and lanolin.',
-        placeholder: 'ic-jar',
-        image: 'https://www.vanicream.com/dynamic-media/product/images/pump-tc22o-front.jpg?gravity=center&v=galleryZoom&k=5aLU6GBqjU8TPTPIqBrsIg'
-      },
-      {
-        brand: 'Gold Bond',
-        name: 'Age Renew Retinol Overnight Body & Face Lotion',
-        use: 'Overnight smoothing and texture renewal with stabilized retinol & peptide complex.',
-        placeholder: 'ic-tube',
-        image: 'https://www.goldbond.com/dam/jcr:837b14c0-c7a3-44d7-971a-64f57698e888/GoldBond_RetinolOvernight_7oz_Tube_F_Thumb.webp'
-      },
-      {
-        brand: 'CeraVe',
-        name: 'Itch Relief Moisturizing Cream',
-        use: 'Hydrates and soothes itchy, dry, or irritated skin with ceramides and pramoxine HCl.',
-        placeholder: 'ic-jar',
-        image: 'https://www.lorealdermatologicalbeauty.us/-/media/Foundation/Products/PLPImages/UID2000179.png?h=625&iar=0&w=500&hash=DE9A3A82BFD42611F60ED1F1E1F286D2'
-      }
-    ]
+    desc: { en: 'Daily hydration for face and body — including a gentle retinol option for overnight repair and a formula for itch-prone skin.',
+            es: 'Hidratación diaria para el rostro y cuerpo — incluyendo una opción suave de retinol para reparación nocturna y una fórmula para piel propensa a picazón.' },
+    productIds: ['vanicream', 'gold-bond-retinol', 'cerave-itch-relief']
   },
   {
     id: 'sunscreens',
     number: '02',
-    title: 'Sunscreens',
-    desc: 'Daily broad-spectrum SPF protection — tinted, stick, and moisturizing options to fit any routine.',
-    products: [
-      {
-        brand: 'EltaMD',
-        name: 'UV Clear Broad-Spectrum SPF 46 Tinted',
-        use: 'Lightweight tinted sunscreen for acne-prone and sensitive skin, with 5% niacinamide.',
-        placeholder: 'ic-spf',
-        image: 'https://bluemercury.com/cdn/shop/files/variant_images-size-Tinted-390205025206-1_a64bfffe-c842-41ac-b7d2-aae8f95c1c80.jpg'
-      },
-      {
-        brand: 'Supergoop!',
-        name: 'Unseen Sunscreen Stick SPF 40',
-        use: 'Travel-friendly invisible stick glides over makeup with zero white cast and a natural finish.',
-        placeholder: 'ic-tube',
-        image: 'https://cdn.shopify.com/s/files/1/1503/5658/files/UnseenSunscreenStick_Alt_01_new.jpg?v=1716989664'
-      },
-      {
-        brand: 'Olay',
-        name: 'Complete UV365 Daily Moisturizer SPF 30',
-        use: 'Lightweight 2-in-1 daily moisturizer with broad-spectrum UVA/UVB protection.',
-        placeholder: 'ic-pump',
-        image: 'https://cdn11.bigcommerce.com/s-gud7r2x2lu/images/stencil/960w/products/525/8490/MOI_Olay_EN_CompleteLightweightLotionSPF30Sensitive_2.5oz__08982.1756232318.jpg?c=2'
-      }
-    ]
+    desc: { en: 'Daily broad-spectrum SPF protection — tinted, stick, and moisturizing options to fit any routine.',
+            es: 'Protección solar diaria de amplio espectro — opciones con color, en stick e hidratantes para cualquier rutina.' },
+    productIds: ['eltamd', 'supergoop', 'olay-spf30']
   },
   {
     id: 'cleansers',
     number: '03',
-    title: 'Cleansers & Treatments',
-    desc: 'Gentle daily cleansing plus a clinically proven minoxidil foam for scalp hair regrowth.',
-    products: [
-      {
-        brand: 'CeraVe',
-        name: 'Hydrating Cream-to-Foam Cleanser',
-        use: 'Removes makeup and impurities with ceramides and hyaluronic acid — without stripping the skin barrier.',
-        placeholder: 'ic-pump',
-        image: 'https://www.cerave.com/-/media/project/loreal/brand-sites/cerave/americas/us/skincare/cleansers/hydrating-cream-to-foam-cleanser/hydrating-cream-to-foam-cleanser_front.jpg'
-      },
-      {
-        brand: "Men's Rogaine",
-        name: '5% Minoxidil Foam Hair Regrowth Treatment',
-        use: 'Clinically proven topical aerosol foam that reactivates hair follicles to stimulate regrowth.',
-        placeholder: 'ic-bottle',
-        image: 'https://images.ctfassets.net/t975yazu1avh/3luXrziUsmtguOFJXZ3Bmr/6730570138bd42f6803ff6d00afae160/rog_mens_1month_202401-1-new_702d6fc3-8d70-4b7c-a2ea-3c51d59b43ab.webp'
-      }
-    ]
+    desc: { en: 'Gentle daily cleansing plus a clinically proven minoxidil foam for scalp hair regrowth.',
+            es: 'Limpieza diaria suave más una espuma de minoxidil clínicamente probada para el crecimiento del cabello.' },
+    productIds: ['cerave-cleanser', 'rogaine']
   }
 ];
 
-// =============================================================
-// Render
-// =============================================================
-const main = document.getElementById('main');
+// ===================================================================
+// ROUTINE BUILDER LOGIC
+// ===================================================================
+function buildRoutine({ skinType, concern, notSure }) {
+  const am = ['cerave-cleanser'];
+  const pm = ['cerave-cleanser'];
+  const extras = [];
+  const tips = [];
 
-categories.forEach(cat => {
-  const section = document.createElement('section');
-  section.className = 'category';
-  section.id = cat.id;
-  const count = cat.products.length;
+  const moisturizer = concern === 'dryness' ? 'cerave-itch-relief' : 'vanicream';
 
-  section.innerHTML = `
-    <div class="cat-header">
-      <span class="cat-num" aria-hidden="true">${cat.number}</span>
-      <h2 class="cat-title">${cat.title}</h2>
-      <span class="cat-count">${count} ${count === 1 ? 'Product' : 'Products'}</span>
-    </div>
-    <p class="cat-desc">${cat.desc}</p>
-    <div class="products">
-      ${cat.products.map(p => `
-        <article class="product">
-          <div class="product-image">
-            ${p.image
-              ? `<img src="${p.image}" alt="${p.brand} ${p.name}"
-                   onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'"
-                 >
-                 <div class="ph-wrap" style="display:none">
-                   <svg class="ph" aria-hidden="true"><use href="#${p.placeholder}"/></svg>
-                   <span class="ph-label">${p.brand}</span>
-                 </div>`
-              : `<div class="ph-wrap">
-                   <svg class="ph" aria-hidden="true"><use href="#${p.placeholder}"/></svg>
-                   <span class="ph-label">${p.brand}</span>
-                 </div>`
-            }
-          </div>
-          <div class="product-info">
-            <div class="product-brand">${p.brand}</div>
-            <h3 class="product-name">${p.name}</h3>
-            <p class="product-use">${p.use}</p>
-          </div>
-        </article>
-      `).join('')}
-    </div>
-  `;
-  main.appendChild(section);
+  let amSpf;
+  if (skinType === 'sensitive' || notSure) {
+    amSpf = 'olay-spf30'; // 2-in-1 → fewer steps to remember
+  } else if (concern === 'sun' || skinType === 'oily' || skinType === 'combination') {
+    amSpf = 'eltamd';
+  } else {
+    amSpf = 'eltamd';
+  }
+
+  if (amSpf !== 'olay-spf30') am.push(moisturizer);
+  am.push(amSpf);
+
+  const safeForRetinol = skinType !== 'sensitive' && concern !== 'dryness' && !notSure;
+  if (concern === 'aging' && safeForRetinol) {
+    pm.push('gold-bond-retinol');
+    if (skinType === 'dry') pm.push(moisturizer);
+    tips.push('tipRetinol');
+  } else if (concern === 'dryness') {
+    pm.push('cerave-itch-relief');
+    tips.push('tipDryness');
+  } else {
+    pm.push(moisturizer);
+    if (skinType === 'dry') tips.push('tipDryness');
+  }
+
+  if (concern === 'hair') {
+    extras.push('rogaine');
+    tips.push('tipRogaine');
+  }
+  if (skinType === 'sensitive') tips.push('tipSensitive');
+  if (notSure) tips.push('tipNotSure');
+
+  return { am, pm, extras, tips };
+}
+
+// ===================================================================
+// STATE + RENDER
+// ===================================================================
+let currentLang = 'en';
+const answers = { skinType: null, concern: null, notSure: false };
+let lastRoutine = null;
+const t = () => i18n[currentLang];
+const $ = id => document.getElementById(id);
+
+function applyTranslations() {
+  const T = t();
+  document.documentElement.lang = currentLang;
+
+  $('t-headline').innerHTML = T.headline;
+  $('t-lead').textContent = T.lead;
+  $('cta-quiz').textContent = T.ctaQuiz;
+  $('t-quiz-eyebrow').textContent = T.quizEyebrow;
+  $('t-quiz-title').textContent = T.quizTitle;
+  $('t-quiz-sub').textContent = T.quizSub;
+  $('t-q1').textContent = T.q1;
+  $('t-q2').textContent = T.q2;
+  $('btn-not-sure').textContent = T.notSure;
+  $('btn-next-1').textContent = T.next;
+  $('btn-back-2').textContent = T.back;
+  $('btn-submit').textContent = T.submit;
+  $('t-results-title').textContent = T.resultsTitle;
+  $('t-tips-label').textContent = T.tipsLabel;
+  $('btn-restart').textContent = T.restart;
+  $('btn-print').textContent = T.print;
+  $('t-footer-brand').textContent = T.footerBrand;
+  $('t-footer-meta').textContent = T.footerMeta + new Date().toLocaleDateString(currentLang === 'es' ? 'es-ES' : 'en-US', { month: 'long', year: 'numeric' });
+  $('t-disclaimer').textContent = T.disclaimer;
+
+  renderOptions();
+  renderCatNav();
+  renderCategories();
+  if (lastRoutine) renderResults();
+}
+
+function renderOptions() {
+  const T = t();
+
+  const skinBox = $('opts-skintype');
+  skinBox.innerHTML = '';
+  Object.entries(T.skinType).forEach(([key, opt]) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'option-card' + (answers.skinType === key && !answers.notSure ? ' selected' : '');
+    b.innerHTML = `<span class="opt-label">${opt.label}</span><span class="opt-desc">${opt.desc}</span>`;
+    b.dataset.value = key;
+    b.addEventListener('click', () => {
+      answers.skinType = key;
+      answers.notSure = false;
+      skinBox.querySelectorAll('.option-card').forEach(x => x.classList.toggle('selected', x.dataset.value === key));
+      $('btn-not-sure').classList.remove('selected');
+      $('btn-next-1').disabled = false;
+    });
+    skinBox.appendChild(b);
+  });
+
+  const conBox = $('opts-concern');
+  conBox.innerHTML = '';
+  Object.entries(T.concern).forEach(([key, opt]) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'option-card' + (answers.concern === key ? ' selected' : '');
+    b.innerHTML = `<span class="opt-label">${opt.label}</span><span class="opt-desc">${opt.desc}</span>`;
+    b.dataset.value = key;
+    b.addEventListener('click', () => {
+      answers.concern = key;
+      conBox.querySelectorAll('.option-card').forEach(x => x.classList.toggle('selected', x.dataset.value === key));
+      $('btn-submit').disabled = false;
+    });
+    conBox.appendChild(b);
+  });
+}
+
+function renderCatNav() {
+  const T = t();
+  const nav = $('catnav');
+  nav.innerHTML = '';
+  categories.forEach(c => {
+    const a = document.createElement('a');
+    a.href = '#' + c.id;
+    a.dataset.target = c.id;
+    a.textContent = T.catNav[c.id];
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      $(c.id).scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    nav.appendChild(a);
+  });
+}
+
+function renderCategories() {
+  const T = t();
+  const main = $('main');
+  main.innerHTML = '';
+  categories.forEach(cat => {
+    const section = document.createElement('section');
+    section.className = 'category';
+    section.id = cat.id;
+    const count = cat.productIds.length;
+    section.innerHTML = `
+      <div class="cat-header">
+        <span class="cat-num" aria-hidden="true">${cat.number}</span>
+        <h2 class="cat-title">${T.catNav[cat.id]}</h2>
+        <span class="cat-count">${T.productWord(count)}</span>
+      </div>
+      <p class="cat-desc">${cat.desc[currentLang]}</p>
+      <div class="products">
+        ${cat.productIds.map(pid => {
+          const p = products[pid];
+          return `
+            <article class="product">
+              <div class="product-image">
+                <img src="${p.image}" alt="${p.brand} ${p.name[currentLang]}"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                <div class="ph-wrap" style="display:none">
+                  <svg class="ph" aria-hidden="true"><use href="#${p.placeholder}"/></svg>
+                  <span class="ph-label">${p.brand}</span>
+                </div>
+              </div>
+              <div class="product-info">
+                <div class="product-brand">${p.brand}</div>
+                <h3 class="product-name">${p.name[currentLang]}</h3>
+                <p class="product-use">${p.use[currentLang]}</p>
+              </div>
+            </article>
+          `;
+        }).join('')}
+      </div>
+    `;
+    main.appendChild(section);
+  });
+}
+
+function renderResults() {
+  const T = t();
+  const r = lastRoutine;
+  const skinKey = answers.notSure ? 'sensitive' : answers.skinType;
+  $('results-summary').textContent = T.summary(T.summaryLabels[skinKey], T.summaryLabels[answers.concern]);
+
+  const grid = $('routine-grid');
+  const block = (title, icon, ids, extraClass = '') => {
+    if (!ids.length) return '';
+    return `
+      <div class="routine-block ${extraClass}">
+        <div class="routine-block-header">
+          <span class="routine-icon">${icon}</span>
+          <span class="routine-block-title">${title}</span>
+        </div>
+        ${ids.map((pid, i) => {
+          const p = products[pid];
+          return `
+            <div class="routine-step">
+              <span class="step-num">${i+1}</span>
+              <div class="step-info">
+                <div class="step-brand">${p.brand}</div>
+                <div class="step-name">${p.name[currentLang]}</div>
+                <div class="step-use">${p.step[currentLang]}</div>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+  };
+  grid.innerHTML = block(T.morning, '☀', r.am) + block(T.evening, '☾', r.pm) + block(T.additional, '+', r.extras, 'extras');
+
+  const tipsBox = $('tips-box');
+  const tipsList = $('tips-list');
+  if (r.tips.length) {
+    tipsList.innerHTML = r.tips.map(k => `<li>${T[k]}</li>`).join('');
+    tipsBox.hidden = false;
+  } else {
+    tipsBox.hidden = true;
+  }
+}
+
+// ===================================================================
+// QUIZ NAVIGATION
+// ===================================================================
+function showStep(n) {
+  document.querySelectorAll('.quiz-question').forEach(q => q.classList.toggle('active', +q.dataset.question === n));
+  document.querySelectorAll('#quiz-progress .dot').forEach((d, i) => {
+    d.classList.toggle('active', i === n);
+    d.classList.toggle('done', i < n);
+  });
+}
+
+function submitQuiz() {
+  const effective = answers.notSure ? 'sensitive' : answers.skinType;
+  lastRoutine = buildRoutine({ skinType: effective, concern: answers.concern, notSure: answers.notSure });
+  $('quiz-intro').style.display = 'none';
+  $('quiz-results').classList.add('active');
+  renderResults();
+  $('quiz').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function restartQuiz() {
+  answers.skinType = null;
+  answers.concern = null;
+  answers.notSure = false;
+  lastRoutine = null;
+  $('quiz-intro').style.display = 'block';
+  $('quiz-results').classList.remove('active');
+  $('btn-next-1').disabled = true;
+  $('btn-submit').disabled = true;
+  $('btn-not-sure').classList.remove('selected');
+  renderOptions();
+  showStep(0);
+}
+
+// ===================================================================
+// EVENT WIRE-UP
+// ===================================================================
+$('btn-next-1').addEventListener('click', () => showStep(1));
+$('btn-back-2').addEventListener('click', () => showStep(0));
+$('btn-submit').addEventListener('click', submitQuiz);
+$('btn-restart').addEventListener('click', restartQuiz);
+$('btn-print').addEventListener('click', () => window.print());
+$('cta-quiz').addEventListener('click', () => $('quiz').scrollIntoView({ behavior: 'smooth', block: 'start' }));
+
+$('btn-not-sure').addEventListener('click', e => {
+  answers.notSure = true;
+  answers.skinType = 'sensitive';
+  document.querySelectorAll('#opts-skintype .option-card').forEach(b => b.classList.remove('selected'));
+  e.currentTarget.classList.add('selected');
+  $('btn-next-1').disabled = false;
 });
 
-// Date stamp
-document.getElementById('date').textContent = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-
-// Smooth scroll
-document.querySelectorAll('.catnav a[data-target]').forEach(link => {
-  link.addEventListener('click', e => {
-    e.preventDefault();
-    const t = document.getElementById(link.dataset.target);
-    if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+document.querySelectorAll('.lang-toggle button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (currentLang === btn.dataset.lang) return;
+    currentLang = btn.dataset.lang;
+    document.querySelectorAll('.lang-toggle button').forEach(b => b.classList.toggle('active', b.dataset.lang === currentLang));
+    applyTranslations();
   });
 });
+
+applyTranslations();
 </script>
 </body>
 </html>
